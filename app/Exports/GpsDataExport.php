@@ -52,6 +52,7 @@ class GpsDataExport implements FromQuery, WithHeadings, WithMapping
         return GpsData::query()
             ->where('device_id', 'like', '%' . $this->deviceID . '%')
             ->where('time', '>=', $this->desde)
-            ->where('time', '<=', $this->hasta);
+            ->where('time', '<=', $this->hasta)
+            ->orderBy('time', 'DESC');
     }
 }

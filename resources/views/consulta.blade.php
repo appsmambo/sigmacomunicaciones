@@ -14,11 +14,11 @@
             </div>
             <div class="col-6 col-sm-4 col-lg-3 form-group">
                 <label for="desde">Desde</label>
-                <input type="date" class="form-control" id="desde" name="desde" value="{{ $desde }}">
+                <input type="datetime-local" class="form-control" id="desde" name="desde" value="{{ $desde }}">
             </div>
             <div class="col-6 col-sm-4 col-lg-3 form-group">
                 <label for="hasta">Hasta</label>
-                <input type="date" class="form-control" id="hasta" name="hasta" value="{{ $hasta }}">
+                <input type="datetime-local" class="form-control" id="hasta" name="hasta" value="{{ $hasta }}" max="{{ now()->toDateString() }}T23:59">
             </div>
             <div class="col-12 col-lg-4  col-xl-3 form-group">
                 <label class="d-none d-lg-block">&nbsp;</label>

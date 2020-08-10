@@ -53,9 +53,11 @@ class HomeController extends Controller
         $deviceID = '';
         // retirar - y substraer parte del año
         // 20 08 07 12 00 36
+        // 20 08 09 19 47
+        // 20 08 09 19 47 00
         // y  M  d  H  i  s
-        $desde = substr(str_replace('-', '', $request->input('desde')), 2) . '000000';
-        $hasta = substr(str_replace('-', '', $request->input('hasta')), 2) . '235959';
+        $desde = substr(str_replace(array('-', 'T', ':'), '', $request->input('desde')), 2) . '00';
+        $hasta = substr(str_replace(array('-', 'T', ':'), '', $request->input('hasta')), 2) . '59';
 
         $gpsData = GpsData::select('device_id', 'name', 'lt', 'lg', 'lbs_type', 'altitude', 'speed', 'direction', 'time', 'sos_flag');
 
@@ -76,7 +78,7 @@ class HomeController extends Controller
         }
 
         $gpsData = $gpsData
-            ->orderBy('created_at', 'DESC')
+            ->orderBy('time', 'DESC')
             ->paginate(10);
 
         return view('consulta')
@@ -95,10 +97,10 @@ class HomeController extends Controller
             $deviceID = $request->input('deviceID');
         }
         if ($request->has('desde') && !empty($request->input('desde'))) {
-            $desde = substr(str_replace('-', '', $request->input('desde')), 2) . '000000';
+            $desde = substr(str_replace(array('-', 'T', ':'), '', $request->input('desde')), 2) . '00';
         }
         if ($request->has('hasta') && !empty($request->input('hasta'))) {
-            $hasta = substr(str_replace('-', '', $request->input('hasta')), 2) . '235959';
+            $hasta = substr(str_replace(array('-', 'T', ':'), '', $request->input('hasta')), 2) . '59';
         }
         return Excel::download(new GpsDataExport($deviceID, $desde, $hasta), 'GpsData.xlsx');
     }
