@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Configuracion;
 use App\GpsData;
 use App\Exports\GpsDataExport;
-
+use App\User;
 
 class HomeController extends Controller
 {
@@ -34,18 +34,36 @@ class HomeController extends Controller
 
     public function postGrabarConfiguracion(Request $request)
     {
-        $id = $request->input('id', 1);
-        $login_interface = $request->input('login_interface');
-        $usr = $request->input('usr');
-        $pwd = $request->input('pwd');
-        $url = $request->input('url');
-        $configuracion = Configuracion::find($id);
-        $configuracion->login_interface = $login_interface;
-        $configuracion->usr = $usr;
-        $configuracion->pwd = $pwd;
-        $configuracion->url = $url;
-        $configuracion->save();
-        return redirect()->route('index');
+        if ($request->isMethod('post')) {
+            $pwd = $request->input('password', '');
+            if ($pwd == '') {
+                $request->session()->flash('message', 'Debe ingresar su password.');
+                return redirect()->route('configuracion');
+            }
+            $authUser = auth()->user();
+            $user = User::find($authUser->id);
+            $hasher = app('hash');
+            if ($hasher->check($pwd, $user->password)) {
+                $id = $request->input('id', 1);
+                $login_interface = $request->input('login_interface');
+                $usr = $request->input('usr');
+                $pwd = $request->input('pwd');
+                $url = $request->input('url');
+                $configuracion = Configuracion::find($id);
+                $configuracion->login_interface = $login_interface;
+                $configuracion->usr = $usr;
+                $configuracion->pwd = $pwd;
+                $configuracion->url = $url;
+                $configuracion->save();
+                return redirect()->route('index');
+            } else {
+                $request->session()->flash('message', 'El password es incorrecto.');
+                return redirect()->route('configuracion');
+            }
+        } else {
+            $request->session()->flash('message', 'El password es incorrecto.');
+            return redirect()->route('configuracion');
+        }
     }
 
     public function getConsulta(Request $request)
